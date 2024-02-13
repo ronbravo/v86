@@ -1,0 +1,38 @@
+// ref: https://github.com/slavfox/Cozette
+@font-face {
+  font-family: Cozette;
+  src: url(~/public/CozetteVector.ttf);
+}
+
+.general-code-text {
+//  border: 1px solid #e1e1e1;
+  font-family: Cozette, monospace;
+  font-size: 14px;
+//  height: 240px;
+//  margin: 18px;
+//  padding: 8px;
+//  white-space: pre !important;
+//  width: 800px;
+}
+
+html {
+  border: 0px solid blue;
+}
+.hide {
+  display: none !important;
+}
+.viewarea {
+  border: 0px solid red;
+  margin: 18px 8px;
+}
+.viewarea-text {
+  .general-code-text;
+//  border: 10px solid blue;
+//  font: 14px monospace; 
+  line-height: 14px;
+  white-space: pre; 
+}
+.viewarea-canvas {
+  border: 10px solid green;
+  display: none;
+}

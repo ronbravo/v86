@@ -1,0 +1,97 @@
+import restana from 'restana';
+import cors from 'cors';
+import fs from 'fs-extra';
+import { spawn } from 'child_process';
+import { fileURLToPath } from 'url';
+import { join } from 'path';
+
+import { Server } from 'socket.io';
+// import Nodemon from 'nodemon';
+// import { spawn } from 'child_process';
+
+export function start () {
+  let app, port;
+
+  port = 9501;
+
+  app = restana ();
+  app.use (cors ());
+
+  app.get ('/status', (req, res) => {
+    res.send ({ status: 200 });
+  });
+
+  console.log ('- api server started:', port);
+  app.get ('/build', build);
+  app.start (port);
+
+  // Use Nodemon to watch for bin file changes
+  let cp;
+  cp = spawn (`nodemon --exec "cd build/sandbox && make" --watch ./build/sandbox -e asm`, {
+    shell: true,
+    stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
+  });
+  cp.on('message', function (event) {
+    if (event.type === 'start') {
+      // console.log('nodemon started');
+      for (let key in sockets) {
+        let socket = sockets [key];
+        socket.emit ('reload');
+      }
+    } else if (event.type === 'crash') {
+      console.log('script crashed for some reason');
+    }
+  });
+
+  // Socket
+  let io, sockets;
+  sockets = {};
+  console.log ('- socket server started:', port);
+  io = new Server (app.getServer (), {
+    cors: {
+      origin: '*',
+    },
+  });
+  io.on ('connection', (socket) => {
+    socket.emit ('hello', 'world');
+    console.log ('- connected:', socket.id);
+    sockets [socket.id] = socket;
+    socket.on ('howdy', (arg) => {
+      console.log (arg);
+    });
+    socket.on ('disconnect', (reason) => {
+      console.log ('- disconnected:', reason, socket.id);
+      delete sockets [socket.id];
+    });
+  });
+}
+
+export async function build (req, res) {
+  let command, child, file, name, path;
+
+  path = fileURLToPath (import.meta.url);
+  path = join (path, '..', '..', '..', '..', 'build', 'sandbox');
+  name = 'boot';
+
+  command = ['ls -la'];
+  command = ['nasm -f bin ', name, '.asm', ' -o ', name, '.bin'];
+  command = command.join ('');
+
+  child = spawn (command, {
+    cwd: path,
+    shell: true,
+    stdio: 'inherit',
+  });
+
+//  child.on ('data', (data) => {
+//    console.log ('error');
+//  });
+  child.on ('close', (data) => {
+    console.log ('done', command, '\n', path);
+    res.send ({
+      status: 200,
+      command,
+      path,
+    });
+  });
+}

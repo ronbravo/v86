@@ -145,10 +145,10 @@ update_version:
 
 
 $(CLOSURE):
-	wget -P $(CLOSURE_DIR) http://dl.google.com/closure-compiler/compiler-latest.zip
-	unzip -d closure-compiler $(CLOSURE_DIR)/compiler-latest.zip \*.jar
+	wget -P $(CLOSURE_DIR) https://repo1.maven.org/maven2/com/google/javascript/closure-compiler/v20171112/closure-compiler-v20171112.jar
+	# unzip -d closure-compiler $(CLOSURE_DIR)/compiler-latest.zip \*.jar
 	mv $(CLOSURE_DIR)/*.jar $(CLOSURE)
-	rm $(CLOSURE_DIR)/compiler-latest.zip
+	# rm $(CLOSURE_DIR)/compiler-latest.zip
 
 tests: build/libv86.js
 	./tests/full/run.js
