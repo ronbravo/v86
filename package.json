@@ -3,14 +3,15 @@
   "license": "BSD-2-Clause",
   "type": "module",
   "scripts": {
-    "build:bin": "cd build/sandbox && make",
+    "build:bin": "cd src/asm && make",
     "build:lib": "make build/libv86.js",
     "build:defasm": "npx rollup --config rollup.config.defasm.js",
+    "build:image": "node src/js/server/build/image/start.js",
     "dev": "npx nodemon --exec \"npm run dev:parcel\" --watch build/sandbox -e bin",
     "dev:build": "npx nodemon --exec \"node src/js/server/watch/start.js\" --watch src/js/server/watch",
     "dev:api": "npx nodemon --exec \"node src/js/server/start.js\" --watch src/js/server",
     "dev:os": "npx live-server --port=9502 --cors --no-browser --watch=src ./",
-    "dev:parcel": "npx parcel serve --port=9500 public/index.html",
+    "dev:parcel": "npx parcel serve --port=9500 --no-hmr public/index.html",
     "test": "node tests/full/run.js"
   },
   "devDependencies": {
@@ -27,8 +28,10 @@
     "axios": "^1.6.3",
     "cors": "^2.8.5",
     "fs-extra": "^11.2.0",
+    "lemonadejs": "^4.1.1",
     "less": "^4.2.0",
     "litedom": "^0.12.1",
+    "minimist": "^1.2.8",
     "restana": "^4.9.7",
     "socket.io": "^4.7.4",
     "socket.io-client": "^4.7.4"

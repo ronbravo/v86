@@ -11,7 +11,7 @@ export const HTML_TEMPLATE = `
     <h1>OS Dev</h1>
     <span>A sandbox for working on an OS.</span>
   </div>
-  <button id="bob">start</button>
+  <button id="bob" style="display: none">start</button>
   <div id="screen_container" class="viewarea">
     <div class="viewarea-text"></div>
     <canvas class="viewarea-canvas"></canvas>
@@ -23,9 +23,6 @@ export async function start () {
   Litedom({
     tagName: 'hello-world',
     template: HTML_TEMPLATE,
-    data: {
-      world: 'World'
-    }
   });
 
   let dom;
@@ -36,10 +33,16 @@ export async function start () {
   socket = io (`${domain}:9501`);
   socket.on ('hello', (arg) => {
     // console.log (arg);
+    loadEmulator ();
   });
   socket.on ('reload', (arg) => {
+    console.log ('reload...');
     location.reload ();
-    // console.log ('gotem');
+  });
+  socket.on ('watcher/asm/restarted', (arg) => {
+    setTimeout (() => {
+      console.error ('There seems to have been an error reloading asm boot changes. Page did not refresh');
+    }, 1000);
   });
   socket.emit ('howdy', 'stranger');
 
@@ -48,53 +51,60 @@ export async function start () {
   reply = await axios.get (`${domain}:9501/status`);
   console.log (reply.data);
 
-  reply = await axios.get (`${domain}:9501/build`);
-  console.log (reply.data);
-
-  loadEmulator ();
+  // reply = await axios.get (`${domain}:9501/build`);
+  // console.log (reply.data);
+  // loadEmulator ();
 }
 
 export function loadEmulator () {
   let dom;
-  dom = document.createElement ('script');
-  dom.src = `${domain}:9502/build/libv86.js`;
-  dom.onload = () => {
-    let button;
-    button = document.querySelector ('#bob');
-    //button.addEventListener ('click', () => {
-      let emulator;
-      button.classList.add ('hide');
-      emulator = new V86Starter ({
-        screen_container: document.querySelector ('#screen_container'),
-        bios: {
-          url: `${domain}:9502/bios/seabios.bin`,
-          // url: "../../bios/seabios.bin",
-        },
-        vga_bios: {
-          url: `${domain}:9502/bios/vgabios.bin`,
-          // url: "../../bios/vgabios.bin",
-        },
-        // hda: {
-        //   url: `${domain}:9502/build/sandbox/hello.bin`,
-        //   // url: "../build/sandbox/hello.bin",
-        // },
-        hda: {
-          url: `${domain}:9502/build/sandbox/boot.bin`,
-          // url: `${domain}:9502/build/sandbox/boot.img`,
-          // url: `${domain}:9502/build/sandbox/hello.bin`,
-          // url: "../build/sandbox/hello.bin",
-          // size: 8 * 1024 * 1024 * 1024,
-          size: 8 * 1024 * 1024 * 1024,
-          async: true,
-        },
-        // cdrom: {
-        //     url: "../../images/linux.iso",
-        // },
-        autostart: true,
-      });
-    //});
+  dom = document.querySelector ('#v86');
+  if (!dom) {
+    dom = document.createElement ('script');
+    dom.src = `${domain}:9502/build/libv86.js`;
+    dom.id = 'v86';
+    dom.onload = () => {
+      let button;
+      button = document.querySelector ('#bob');
+      //button.addEventListener ('click', () => {
+        let emulator;
+        try {
+          button.classList.add ('hide');
+          emulator = new V86Starter ({
+            screen_container: document.querySelector ('#screen_container'),
+            bios: {
+              url: `${domain}:9502/bios/seabios.bin`,
+              // url: "../../bios/seabios.bin",
+            },
+            vga_bios: {
+              url: `${domain}:9502/bios/vgabios.bin`,
+              // url: "../../bios/vgabios.bin",
+            },
+            // hda: {
+            //   url: `${domain}:9502/build/sandbox/hello.bin`,
+            //   // url: "../build/sandbox/hello.bin",
+            // },
+            hda: {
+              url: `${domain}:9502/build/boot.bin`,
+              // url: `${domain}:9502/build/sandbox/boot.img`,
+              // url: `${domain}:9502/build/sandbox/hello.bin`,
+              // url: "../build/sandbox/hello.bin",
+              // size: 8 * 1024 * 1024 * 1024,
+              size: 8 * 1024 * 1024 * 1024,
+              async: true,
+            },
+            // cdrom: {
+            //     url: "../../images/linux.iso",
+            // },
+            autostart: true,
+          });
+        } catch (err) {
+          console.error (err);
+        }
+      //});
+    }
+    document.body.appendChild (dom);
   }
-  document.body.appendChild (dom);
 }
 
 start ();

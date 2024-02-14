@@ -14,12 +14,18 @@ dependencies:
   fs-extra:
     specifier: ^11.2.0
     version: 11.2.0
+  lemonadejs:
+    specifier: ^4.1.1
+    version: 4.1.1
   less:
     specifier: ^4.2.0
     version: 4.2.0
   litedom:
     specifier: ^0.12.1
     version: 0.12.1
+  minimist:
+    specifier: ^1.2.8
+    version: 1.2.8
   restana:
     specifier: ^4.9.7
     version: 4.9.7
@@ -2080,6 +2086,10 @@ packages:
       graceful-fs: 4.2.11
     dev: false
 
+  /lemonadejs@4.1.1:
+    resolution: {integrity: sha512-z9Pe6ul8uIMR62tHtiS85vdvJ8xxIkOmkRgP3U6p3Do+zUFcXxbYv2yF7xkXct9mHMtdaXukUmsBNDsQp4H0Pw==}
+    dev: false
+
   /less@4.2.0:
     resolution: {integrity: sha512-P3b3HJDBtSzsXUl0im2L7gTO5Ubg8mEN6G8qoTS77iXxXX4Hvu4Qj540PZDvQ8V6DmX6iXo98k7Md0Cm1PrLaA==}
     engines: {node: '>=6'}
@@ -2293,6 +2303,10 @@ packages:
     dependencies:
       brace-expansion: 2.0.1
     dev: true
+
+  /minimist@1.2.8:
+    resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==}
+    dev: false
 
   /ms@2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}

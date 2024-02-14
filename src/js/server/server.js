@@ -9,6 +9,46 @@ import { Server } from 'socket.io';
 // import Nodemon from 'nodemon';
 // import { spawn } from 'child_process';
 
+const shared = {
+}
+
+export function createWatchers (details = {}) {
+  let { sockets } = details;
+
+  shared.asmWatcher = spawn (`nodemon --exec "pnpm run build:bin" --watch ./src/asm -e asm`, {
+    shell: true,
+    stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
+  });
+  shared.asmWatcher.on('message', function (event) {
+    if (event.type === 'start') {
+      console.log ('- nodemon: boot assembly file watcher started');
+      for (let key in sockets) {
+        let socket = sockets [key];
+        socket.emit ('watcher/asm/restarted');
+      }
+    } else if (event.type === 'error') {
+      console.log ('- asm watcher had an error.');
+    }
+  });
+
+  shared.bootWatcher = spawn (`nodemon --exec "echo \"- reloading os\"" --watch ./build -e bin`, {
+    shell: true,
+    stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
+  });
+  shared.bootWatcher.on('message', function (event) {
+    if (event.type === 'start') {
+      console.log ('- nodemon: boot binary watcher started');
+      for (let key in sockets) {
+        let socket = sockets [key];
+        socket.emit ('reload');
+      }
+    } else if (event.type === 'error') {
+      console.log ('- boot binary watcher had an error.');
+      // shared.asmWatcher.emit ('restart');
+    }
+  });
+}
+
 export function start () {
   let app, port;
 
@@ -24,24 +64,6 @@ export function start () {
   console.log ('- api server started:', port);
   app.get ('/build', build);
   app.start (port);
-
-  // Use Nodemon to watch for bin file changes
-  let cp;
-  cp = spawn (`nodemon --exec "cd build/sandbox && make" --watch ./build/sandbox -e asm`, {
-    shell: true,
-    stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
-  });
-  cp.on('message', function (event) {
-    if (event.type === 'start') {
-      // console.log('nodemon started');
-      for (let key in sockets) {
-        let socket = sockets [key];
-        socket.emit ('reload');
-      }
-    } else if (event.type === 'crash') {
-      console.log('script crashed for some reason');
-    }
-  });
 
   // Socket
   let io, sockets;
@@ -64,6 +86,9 @@ export function start () {
       delete sockets [socket.id];
     });
   });
+
+  // Use Nodemon to watch for bin file changes
+  createWatchers ({ sockets });
 }
 
 export async function build (req, res) {
