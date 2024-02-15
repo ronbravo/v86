@@ -3,7 +3,31 @@ import axios from 'axios';
 import { io } from 'socket.io-client';
 import './style.less';
 
-const domain = 'http://192.168.0.8';
+const shared = {
+  domain: `http://${location.hostname}`,
+}
+
+export function getUrlParams () {
+  let list, params;
+
+  params = location.search;
+  if (params [0] === '?') { params = params.substring (1); }
+  list = params.split ('&');
+  params = {};
+  list.forEach ((item) => {
+    item = item.trim ();
+    if (item) {
+      let parts;
+      parts = item.split ('=');
+      params [parts [0].trim ()] = parts [1].trim ();
+    }
+  });
+  if (params.domain) { shared.domain = `http://${params.domain}`; }
+  shared.params = params;
+}
+
+getUrlParams ();
+console.log ('domain:', shared.domain);
 
 export const HTML_TEMPLATE = `
 <div>
@@ -30,7 +54,7 @@ export async function start () {
   dom.setAttribute ('name', 'bob');
   document.body.appendChild (dom);
 
-  socket = io (`${domain}:9501`);
+  socket = io (`${shared.domain}:9501`);
   socket.on ('hello', (arg) => {
     // console.log (arg);
     loadEmulator ();
@@ -48,10 +72,10 @@ export async function start () {
 
   let reply;
 
-  reply = await axios.get (`${domain}:9501/status`);
+  reply = await axios.get (`${shared.domain}:9501/status`);
   console.log (reply.data);
 
-  // reply = await axios.get (`${domain}:9501/build`);
+  // reply = await axios.get (`${shared.domain}:9501/build`);
   // console.log (reply.data);
   // loadEmulator ();
 }
@@ -61,7 +85,7 @@ export function loadEmulator () {
   dom = document.querySelector ('#v86');
   if (!dom) {
     dom = document.createElement ('script');
-    dom.src = `${domain}:9502/build/libv86.js`;
+    dom.src = `${shared.domain}:9502/build/libv86.js`;
     dom.id = 'v86';
     dom.onload = () => {
       let button;
@@ -73,21 +97,21 @@ export function loadEmulator () {
           emulator = new V86Starter ({
             screen_container: document.querySelector ('#screen_container'),
             bios: {
-              url: `${domain}:9502/bios/seabios.bin`,
+              url: `${shared.domain}:9502/bios/seabios.bin`,
               // url: "../../bios/seabios.bin",
             },
             vga_bios: {
-              url: `${domain}:9502/bios/vgabios.bin`,
+              url: `${shared.domain}:9502/bios/vgabios.bin`,
               // url: "../../bios/vgabios.bin",
             },
             // hda: {
-            //   url: `${domain}:9502/build/sandbox/hello.bin`,
+            //   url: `${shared.domain}:9502/build/sandbox/hello.bin`,
             //   // url: "../build/sandbox/hello.bin",
             // },
             hda: {
-              url: `${domain}:9502/build/boot.bin`,
-              // url: `${domain}:9502/build/sandbox/boot.img`,
-              // url: `${domain}:9502/build/sandbox/hello.bin`,
+              url: `${shared.domain}:9502/build/boot.bin`,
+              // url: `${shared.domain}:9502/build/sandbox/boot.img`,
+              // url: `${shared.domain}:9502/build/sandbox/hello.bin`,
               // url: "../build/sandbox/hello.bin",
               // size: 8 * 1024 * 1024 * 1024,
               size: 8 * 1024 * 1024 * 1024,

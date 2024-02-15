@@ -11,7 +11,7 @@
     "dev:build": "npx nodemon --exec \"node src/js/server/watch/start.js\" --watch src/js/server/watch",
     "dev:api": "npx nodemon --exec \"node src/js/server/start.js\" --watch src/js/server",
     "dev:os": "npx live-server --port=9502 --cors --no-browser --watch=src ./",
-    "dev:parcel": "npx parcel serve --port=9500 --no-hmr public/index.html",
+    "dev:parcel": "npx parcel serve --port=9500 public/index.html",
     "test": "node tests/full/run.js"
   },
   "devDependencies": {
@@ -20,6 +20,7 @@
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "ass-js": "^2.1.1",
+    "buffer": "^5.5.0||^6.0.0",
     "nodemon": "^3.0.3",
     "parcel": "^2.11.0",
     "rollup": "^4.10.0"
