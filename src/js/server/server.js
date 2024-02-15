@@ -1,13 +1,9 @@
 import restana from 'restana';
 import cors from 'cors';
-import fs from 'fs-extra';
 import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 import { join } from 'path';
-
 import { Server } from 'socket.io';
-// import Nodemon from 'nodemon';
-// import { spawn } from 'child_process';
 
 const shared = {
 }
@@ -44,7 +40,6 @@ export function createWatchers (details = {}) {
       }
     } else if (event.type === 'error') {
       console.log ('- boot binary watcher had an error.');
-      // shared.asmWatcher.emit ('restart');
     }
   });
 }
