@@ -7,7 +7,7 @@
 ; *************************************************
 ; Code Module
 ; specify the section (aka a module)
-section.code
+section.code:
 
 ; ---------------------------------------------
 ; Init Function
