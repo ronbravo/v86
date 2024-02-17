@@ -1,4 +1,7 @@
 setup:
+  ; Store the currend disk number
+  mov [disk_num], dl
+
   ; NOTE: 0xb800 is reserved value to indicate the first
   ; character on the screen
 

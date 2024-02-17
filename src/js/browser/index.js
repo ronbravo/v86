@@ -112,7 +112,9 @@ export function loadEmulator () {
             //   // url: "../build/sandbox/hello.bin",
             // },
             hda: {
-              url: `${shared.domain}:9502/build/boot.bin`,
+              // url: `${shared.domain}:9502/build/boot.bin`,
+              url: `${shared.domain}:9502/build/OS.bin`,
+              // url: `${shared.domain}:9502/build/os.img`,
               // url: `${shared.domain}:9502/build/sandbox/boot.img`,
               // url: `${shared.domain}:9502/build/sandbox/hello.bin`,
               // url: "../build/sandbox/hello.bin",

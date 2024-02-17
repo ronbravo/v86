@@ -12,3 +12,14 @@ times 510 - ($ - $$) db 0x00
 ; file is executable
 db 0x55
 db 0xaa
+
+; --------------------------
+
+
+; This is probably the most complex part of this
+; program. There is a video resource that does
+; a great job of breaking this section down
+; ref: https://youtu.be/3IDm_14_tAU?si=u9u4MOP5URAUhRdx
+
+times 512 db 'A'
+
