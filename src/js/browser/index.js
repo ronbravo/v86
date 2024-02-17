@@ -60,14 +60,17 @@ export async function start () {
     loadEmulator ();
   });
   socket.on ('reload', (arg) => {
-    console.log ('reload...');
+    console.clear ();
     location.reload ();
   });
-  socket.on ('watcher/asm/restarted', (arg) => {
-    setTimeout (() => {
-      console.error ('There seems to have been an error reloading asm boot changes. Page did not refresh');
-    }, 1000);
+  socket.on ('watcher/asm/error', (arg) => {
+    console.error ('- ERROR:', arg);
   });
+  // socket.on ('watcher/asm/restarted', (arg) => {
+  //   // setTimeout (() => {
+  //   //  console.error ('There seems to have been an error reloading asm boot changes. Page did not refresh');
+  //   // }, 1000);
+  // });
   socket.emit ('howdy', 'stranger');
 
   let reply;

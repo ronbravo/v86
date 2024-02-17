@@ -1,0 +1,5 @@
+%include "library-16-bit/bootloader/header-usb.asm"
+%include "library-16-bit/bootloader/setup.asm"
+%include "library-16-bit/bootloader/main.asm"
+%include "library-16-bit/bootloader/teardown.asm"
+%include "library-16-bit/bootloader/footer.asm"

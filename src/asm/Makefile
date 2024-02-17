@@ -1,7 +1,7 @@
 all: bootloader
 
 bootloader:
-	nasm ./boot.asm -f bin -o ../../build/boot.bin
+	nasm ./index.asm -f bin -o ../../build/boot.bin
 
 clear:
 	rm -f ../../build/boot.bin

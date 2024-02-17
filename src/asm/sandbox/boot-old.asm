@@ -1,4 +1,51 @@
 ; ----------------------------------------------------------
+mov ah, 0x0e
+mov bl, 65
+
+print_char:
+  cmp bl, 'Z' + 1
+  je end
+  
+  mov al, bl
+  int 0x10
+  
+  mov cl, bl
+  add cl, 32
+  
+  mov al, cl
+  int 0x10
+  
+  inc bl
+  jmp print_char
+
+end:
+  jmp end
+
+text db "One shall stand. One shall fall.", 0
+
+
+; ----------------------------------------------------------
+
+
+[org 0x7c00]
+mov ah, 0x0e
+mov ebx, variableName
+
+printString:
+  mov al, [ebx]
+  cmp al, 0
+  je end
+  int 0x10
+  inc ebx
+  jmp printString
+end:
+
+jmp $
+
+variableName: db "But the fool on the hill bob", 0
+
+
+; ----------------------------------------------------------
 ; ----------------------------------------------------------
 
 ; ; Instruct NASM to generate code that is to be run on CPU that is running in 16 bit mode

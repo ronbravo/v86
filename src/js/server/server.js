@@ -5,43 +5,63 @@ import { fileURLToPath } from 'url';
 import { join } from 'path';
 import { Server } from 'socket.io';
 
+import chokidar from 'chokidar';
+
 const shared = {
 }
 
+export function createAsmWatcher (details = {}) {
+  let { cwd, sockets } = details;
+
+  return function asmWatcher (event, path) {
+    let child;
+    child = spawn (`make`, {
+      cwd,
+      shell: true,
+    });
+    child.stderr.on ('data', (data) => {
+      data = data.toString ().trim ();
+      console.log ('*** ERROR:', data);
+      for (let key in sockets) {
+        let socket = sockets [key];
+        socket.emit ('watcher/asm/error', data);
+      }
+    });
+    child.on ('exit', (code) => {
+      if (code === 0) {
+        for (let key in sockets) {
+          let socket = sockets [key];
+          socket.emit ('reload');
+        }
+        console.log ('- done building bin file');
+      }
+    });
+  }
+}
+
+// export function createBinaryWatcher (details = {}) {
+//   let { sockets } = details;
+
+//   return function binaryWatcher (event, path) {
+//     // for (let key in sockets) {
+//     //   let socket = sockets [key];
+//     //   socket.emit ('reload');
+//     // }
+//     // console.log ('- reload page');
+//   }
+// }
+
 export function createWatchers (details = {}) {
   let { sockets } = details;
+  let cwd;
 
-  shared.asmWatcher = spawn (`nodemon --exec "pnpm run build:bin" --watch ./src/asm -e asm`, {
-    shell: true,
-    stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
-  });
-  shared.asmWatcher.on('message', function (event) {
-    if (event.type === 'start') {
-      console.log ('- nodemon: boot assembly file watcher started');
-      for (let key in sockets) {
-        let socket = sockets [key];
-        socket.emit ('watcher/asm/restarted');
-      }
-    } else if (event.type === 'error') {
-      console.log ('- asm watcher had an error.');
-    }
-  });
+  cwd = fileURLToPath (import.meta.url);
+  cwd = join (cwd, '..', '..', '..', '..', 'src', 'asm');
+  shared.asmWatcher = chokidar.watch (cwd).on ('change', createAsmWatcher ({ cwd, sockets }));
 
-  shared.bootWatcher = spawn (`nodemon --exec "echo \"- reloading os\"" --watch ./build -e bin`, {
-    shell: true,
-    stdio: ['pipe', 'pipe', 'pipe', 'ipc'],
-  });
-  shared.bootWatcher.on('message', function (event) {
-    if (event.type === 'start') {
-      console.log ('- nodemon: boot binary watcher started');
-      for (let key in sockets) {
-        let socket = sockets [key];
-        socket.emit ('reload');
-      }
-    } else if (event.type === 'error') {
-      console.log ('- boot binary watcher had an error.');
-    }
-  });
+  // cwd = fileURLToPath (import.meta.url);
+  // cwd = join (cwd, '..', '..', '..', '..', 'build', 'boot.bin');
+  // shared.binaryWatcher = chokidar.watch (cwd).on ('add', createBinaryWatcher ({ sockets }));
 }
 
 export function start () {

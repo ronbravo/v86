@@ -4,8 +4,8 @@
   src: url(~/public/CozetteVector.ttf);
 }
 
-@font-size: 14px;
-//@font-size: 24px;
+// @font-size: 14px;
+@font-size: 24px;
 
 .general-code-text {
 //  border: 1px solid #e1e1e1;
@@ -29,11 +29,11 @@ html {
   margin: 18px 8px;
 }
 .viewarea-text {
-//  .general-code-text;
+ .general-code-text;
 //  border: 10px solid blue;
-  font: 14px monospace; 
+  font: @font-size monospace;
   line-height: @font-size;
-  white-space: pre; 
+  white-space: pre;
 }
 .viewarea-canvas {
   border: 10px solid green;
