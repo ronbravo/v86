@@ -1,15 +1,8 @@
 setup:
-  cli
-  mov ax, 0x7c0
-  mov ds, ax
-  mov es, ax
-  mov ax, 0x00
-  mov ss, ax
-  mov sp, 0x7c00
-  sti
-
   ; NOTE: 0xb800 is reserved value to indicate the first
   ; character on the screen
+
+  cli     ; clear interrupts
 
   ; Set the data segment register where the data  is moved
   ; to on a computer
@@ -27,4 +20,10 @@ setup:
   mov bx, 0    ; Index of the character in the string we are printing
   mov cx, 0    ; Actual address of the character on the screen
   mov dl, 0     ; Store the actual value that we are printing
+
+  mov ss, ax
+  mov sp, 0x7c00
+
+  sti     ; enable interrupts
+
   jmp main
